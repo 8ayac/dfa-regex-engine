@@ -183,7 +183,7 @@ func NewStar(ope Node) *Star {
 //
 // * frg1(fragment assembled with Concat.Ope1): I1 -- [???] --> F1
 // (new state) -- ['ε'] --> I1 -----> F1
-//	 					    ↑--['ε']-´
+//                          ↑--['ε']-´
 //
 // Note: Accept states of new fragment is "(new state)" and "F1".
 func (s *Star) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
