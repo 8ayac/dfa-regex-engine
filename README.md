@@ -1,3 +1,6 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/8ayac/dfa-regex-engine)](https://goreportcard.com/report/github.com/8ayac/dfa-regex-engine)
+[![Follow on Twitter](https://img.shields.io/twitter/follow/8ayac.svg?style=social&logo=twitter)](https://twitter.com/8ayac)
+ 
 # DFA Regex Engine(in Golang)
 This is simple DFA regex engine written in Go.
 
