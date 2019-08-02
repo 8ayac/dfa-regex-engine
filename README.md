@@ -60,5 +60,4 @@ $ go get -u github.com/8ayac/dfal-regex-engine
 [MIT](https://github.com/8ayac/dfa-regex-engine/blob/master/LICENSE)
 
 ## Author
-- GitHub: [8ayac](https://github.com/8ayac)
-- Twitter: [8ayac](https://twitter.com/8ayac)
+[8ayac](https://github.com/8ayac)
