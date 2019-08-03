@@ -80,7 +80,7 @@ func (dm DFAStatesMap) getState(key mapset.Set) utils.State {
 }
 
 // haveKey returns whether DFAStatesMap has the set given as the argument "key".
-// If it has it, returns true.
+// If it has, returns true.
 func (dm DFAStatesMap) haveKey(key mapset.Set) bool {
 	for k := range dm {
 		if k.Equal(key) {
