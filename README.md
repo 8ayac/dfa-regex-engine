@@ -53,7 +53,7 @@ piy0	=> NOT matched.
 
 ## How to install
 ```sh
-$ go get -u github.com/8ayac/dfal-regex-engine
+$ go get -u github.com/8ayac/dfa-regex-engine
 ```
 
 ## License
