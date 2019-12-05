@@ -45,9 +45,11 @@ func NewCharacter(r rune) *Character {
 	}
 }
 
-// Assemble returns a NFA fragment assembled with Character node.
-// The fragment assembled from a Character node is like below:
-// q1(Initial State) -- [Character.V] --> q2(Accept state)
+/*
+Assemble returns a NFA fragment assembled with Character node.
+The fragment assembled from a Character node is like below:
+	q1(Initial State) -- [Character.V] --> q2(Accept state)
+*/
 func (c *Character) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
 	newFrg := nfabuilder.NewFragment()
 
@@ -87,13 +89,16 @@ func NewUnion(ope1, ope2 Node) *Union {
 	}
 }
 
-// Assemble returns a NFA fragment assembled with Union node.
-// The fragment assembled from a Union node is like below:
-//
-// * frg1(fragment assembled with Union.Ope1): I1 -- [???] --> F1
-// * frg2(fragment assembled with Union.Ope2): I2 -- [???] --> F2
-// I'(new initial state) -- ['ε'] --> frg1
-//                  	 `- ['ε'] --> frg2
+/*
+Assemble returns a NFA fragment assembled with Union node.
+The fragment assembled from a Union node is like below:
+
+	I'(new initial state) -- ['ε'] --> frg1
+    	              	 `- ['ε'] --> frg2
+
+	+ frg1(fragment assembled with Union.Ope1): I1 -- [???] --> F1
+	+ frg2(fragment assembled with Union.Ope2): I2 -- [???] --> F2
+*/
 func (u *Union) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
 	frg1 := u.Ope1.Assemble(ctx)
 	frg2 := u.Ope2.Assemble(ctx)
@@ -134,12 +139,15 @@ func NewConcat(ope1, ope2 Node) *Concat {
 	}
 }
 
-// Assemble returns a NFA fragment assembled with Concat node.
-// The fragment assembled from a Concat node is like below:
-//
-// * frg1(fragment assembled with Concat.Ope1): I1 -- [???] --> F1
-// * frg2(fragment assembled with Concat.Ope2): I2 -- [???] --> F2
-// frg1 -- ['ε']　--> frg2
+/*
+Assemble returns a NFA fragment assembled with Concat node.
+The fragment assembled from a Concat node is like below:
+
+	frg1 -- ['ε']　--> frg2
+
+	+ frg1(fragment assembled with Concat.Ope1): I1 -- [???] --> F1
+	+ frg2(fragment assembled with Concat.Ope2): I2 -- [???] --> F2
+*/
 func (c *Concat) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
 	frg1 := c.Ope1.Assemble(ctx)
 	frg2 := c.Ope2.Assemble(ctx)
@@ -178,14 +186,17 @@ func NewStar(ope Node) *Star {
 	}
 }
 
-// Assemble returns a NFA fragment assembled with Star node.
-// The fragment assembled from a Star node is like below:
-//
-// * frg1(fragment assembled with Concat.Ope1): I1 -- [???] --> F1
-// (new state) -- ['ε'] --> I1 -----> F1
-//                          ↑--['ε']-´
-//
-// Note: Accept states of new fragment is "(new state)" and "F1".
+/*
+Assemble returns a NFA fragment assembled with Star node.
+The fragment assembled from a Star node is like below:
+
+	(new state) -- ['ε'] --> I1 -----> F1
+	                         ↑--['ε']-´
+
+	+ frg1(fragment assembled with Concat.Ope1): I1 -- [???] --> F1
+
+Note: Accept states of new fragment is "(new state)" and "F1".
+*/
 func (s *Star) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
 	orgFrg := s.Ope.Assemble(ctx)
 	newFrg := orgFrg.CreateSkeleton()
