@@ -114,7 +114,6 @@ func (psr *Parser) star() node.Node {
 		return node.NewStar(nd)
 	}
 	return nd
-
 }
 
 // factor -> '(' subexpr ')' | CHARACTER
