@@ -23,6 +23,81 @@ func NewDFA(init utils.State, accepts mapset.Set, rules dfarule.RuleMap) *DFA {
 	}
 }
 
+// Minimize minimizes the DFA.
+func (dfa *DFA) Minimize() {
+	states := mapset.NewSet(dfa.Init)
+	for _, v := range dfa.Rules {
+		states.Add(v)
+	}
+	n := states.N()
+
+	eqMap := map[utils.State]utils.State{}
+	for i := 0; i < n; i++ {
+		q1 := utils.NewState(i)
+		for j := i + 1; j < n; j++ {
+			q2 := utils.NewState(j)
+			if !dfa.isEquivalent(q1, q2) {
+				continue
+			}
+			if _, ok := eqMap[q2]; !ok {
+				eqMap[q2] = q1
+			}
+			dfa.mergeState(getProperEq(q2, eqMap), q2)
+		}
+	}
+}
+
+func getProperEq(q utils.State, eqMap map[utils.State]utils.State) utils.State {
+	for {
+		eq, ok := eqMap[q]
+		if !ok {
+			return q
+		}
+		q = eq
+	}
+}
+
+func (dfa *DFA) copyRule(to, from utils.State) {
+	rules := dfa.Rules
+	for arg, dst := range rules {
+		if arg.From == to && dst == from {
+			rules[arg] = to
+		}
+	}
+}
+
+func (dfa *DFA) deleteState(q utils.State) {
+	rules := dfa.Rules
+	for arg := range rules {
+		if arg.From == q {
+			delete(rules, arg)
+		}
+	}
+}
+
+func (dfa *DFA) mergeState(to, from utils.State) {
+	dfa.copyRule(to, from)
+	dfa.deleteState(from)
+}
+
+func (dfa *DFA) isEquivalent(q1, q2 utils.State) bool {
+	if !((dfa.Accepts.Contains(q1) && dfa.Accepts.Contains(q2)) ||
+		(!dfa.Accepts.Contains(q1) && !dfa.Accepts.Contains(q2))) {
+		return false
+	}
+
+	rules := dfa.Rules
+	for k := range rules {
+		if k.From != q1 {
+			continue
+		}
+		if rules[dfarule.NewRuleArgs(q1, k.C)] != rules[dfarule.NewRuleArgs(q2, k.C)] {
+			return false
+		}
+	}
+	return true
+}
+
 // Runtime has a pointer to d and saves current state for
 // simulating d transitions.
 type Runtime struct {

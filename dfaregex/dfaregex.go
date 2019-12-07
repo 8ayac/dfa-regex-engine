@@ -20,10 +20,12 @@ func NewRegexp(re string) *Regexp {
 	ast := psr.GetAST()
 	frg := ast.Assemble(utils.NewContext())
 	nfa := frg.Build()
+	d := nfa2dfa.ToDFA(nfa)
+	d.Minimize()
 
 	return &Regexp{
 		regexp: re,
-		d:      nfa2dfa.ToDFA(nfa),
+		d:      d,
 	}
 }
 
