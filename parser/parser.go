@@ -57,7 +57,6 @@ func (psr *Parser) moveWithValidation(expect token.Type) {
 func (psr *Parser) expression() node.Node {
 	nd := psr.subexpr()
 	psr.moveWithValidation(token.EOF)
-
 	return nd
 }
 
@@ -68,7 +67,6 @@ func (psr *Parser) expression() node.Node {
 // )
 func (psr *Parser) subexpr() node.Node {
 	nd := psr.seq()
-
 	for {
 		if psr.look.Ty == token.OpeUnion {
 			psr.moveWithValidation(token.OpeUnion)
@@ -87,7 +85,6 @@ func (psr *Parser) seq() node.Node {
 		return psr.subseq()
 	}
 	return node.NewCharacter('ε')
-
 }
 
 // subseq -> subseq star | star
@@ -97,7 +94,6 @@ func (psr *Parser) seq() node.Node {
 // )
 func (psr *Parser) subseq() node.Node {
 	nd := psr.star()
-
 	if psr.look.Ty == token.LPAREN || psr.look.Ty == token.CHARACTER {
 		nd2 := psr.subseq()
 		return node.NewConcat(nd, nd2)
@@ -108,7 +104,6 @@ func (psr *Parser) subseq() node.Node {
 // star -> factor '*' | factor
 func (psr *Parser) star() node.Node {
 	nd := psr.factor()
-
 	if psr.look.Ty == token.OpeStar {
 		psr.moveWithValidation(token.OpeStar)
 		return node.NewStar(nd)
