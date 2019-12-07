@@ -27,13 +27,13 @@ func (l *Lexer) getToken(r rune) *token.Token {
 	case '\\':
 		return token.NewToken(r, token.CHARACTER)
 	case '|':
-		return token.NewToken(r, token.OpeUnion)
+		return token.NewToken(r, token.UNION)
 	case '(':
 		return token.NewToken(r, token.LPAREN)
 	case ')':
 		return token.NewToken(r, token.RPAREN)
 	case '*':
-		return token.NewToken(r, token.OpeStar)
+		return token.NewToken(r, token.STAR)
 	default:
 		return token.NewToken(r, token.CHARACTER)
 	}

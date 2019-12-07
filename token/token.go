@@ -9,8 +9,8 @@ type Type int
 // Each token is identified by a unique integer.
 const (
 	CHARACTER Type = iota
-	OpeUnion
-	OpeStar
+	UNION
+	STAR
 	LPAREN
 	RPAREN
 	EOF
@@ -20,10 +20,10 @@ func (k Type) String() string {
 	switch k {
 	case CHARACTER:
 		return "CHARACTER"
-	case OpeUnion:
-		return "OPE_UNION"
-	case OpeStar:
-		return "OPE_STAR"
+	case UNION:
+		return "UNION"
+	case STAR:
+		return "STAR"
 	case LPAREN:
 		return "LPAREN"
 	case RPAREN:
