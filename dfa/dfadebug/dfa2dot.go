@@ -31,7 +31,7 @@ func NewCommonEdgeAttrs() CommonEdgeAttrs {
 }
 
 // DFA2dot outputs
-func DFA2dot(d dfa.DFA) {
+func DFA2dot(d dfa.DFA, name string) {
 	const GRAPH_NAME = "DFA"
 	g := gographviz.NewGraph()
 
@@ -72,7 +72,7 @@ func DFA2dot(d dfa.DFA) {
 	}
 
 	// Output DOT
-	file, err := os.Create(`dfa.dot`)
+	file, err := os.Create(fmt.Sprintf("%s.dot", name))
 	if err != nil {
 		panic(err)
 	}
