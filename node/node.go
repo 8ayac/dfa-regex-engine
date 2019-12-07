@@ -190,23 +190,29 @@ func NewStar(ope Node) *Star {
 Assemble returns a NFA fragment assembled with Star node.
 The fragment assembled from a Star node is like below:
 
-	(new state) -- ['ε'] --> I1 -----> F1
-	                         ↑--['ε']-´
+	(new state1) -- ['ε'] --> I1 -----> F1 -- ['ε'] --> (new state2)
+	   \					  ↑--['ε']-´						 ↑
+		\														 /
+		 `-------------------------['ε']------------------------´
 
 	+ frg1(fragment assembled with Concat.Ope1): I1 -- [???] --> F1
 
-Note: Accept states of new fragment is "(new state)" and "F1".
+Note: Accept states of new fragment is "(new state1)", "(new state2)" and "I1".
 */
 func (s *Star) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
 	orgFrg := s.Ope.Assemble(ctx)
 	newFrg := orgFrg.CreateSkeleton()
-	newState := utils.NewState(ctx.Increment())
+	newState1 := utils.NewState(ctx.Increment())
+	newState2 := utils.NewState(ctx.Increment())
 
-	newFrg.I = newState
-	newFrg.F = newFrg.F.Union(orgFrg.F)
-	newFrg.F = newFrg.F.Union(mapset.NewSet(newState))
-	newFrg.AddRule(newState, 'ε', orgFrg.I)
+	newFrg.I = newState1
+	newFrg.F.Add(orgFrg.I)
+	newFrg.F.Add(newState2)
+
+	newFrg.AddRule(newFrg.I, 'ε', newState2)
+	newFrg.AddRule(newState1, 'ε', orgFrg.I)
 	for q := range orgFrg.F.Iter() {
+		newFrg.AddRule(q.(utils.State), 'ε', newState2)
 		newFrg.AddRule(q.(utils.State), 'ε', orgFrg.I)
 	}
 
