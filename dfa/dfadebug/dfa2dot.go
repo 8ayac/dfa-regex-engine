@@ -4,6 +4,8 @@ package dfadebug
 import (
 	"fmt"
 	"github.com/8ayac/dfa-regex-engine/dfa"
+	"github.com/8ayac/dfa-regex-engine/utils"
+	mapset "github.com/8ayac/golang-set"
 	"github.com/awalterschulze/gographviz"
 	"os"
 )
@@ -48,16 +50,21 @@ func DFA2dot(d dfa.DFA) {
 	initEdgeAttrs["len"] = "2"
 	_ = g.AddEdge("\"\"", d.Init.String(), true, initEdgeAttrs)
 
-	// For transition rules
-	rules := d.Rules
-	for _, v := range rules {
+	// Make state nodes.
+	states := mapset.NewSet(d.Init)
+	for _, v := range d.Rules {
+		states.Add(v)
+	}
+	for q := range states.Iter() {
 		attrs := NewCommonNodeAttrs()
-		if d.Accepts.Contains(v) {
+		if d.Accepts.Contains(q.(utils.State)) {
 			attrs["shape"] = "doublecircle"
 		}
-		_ = g.AddNode(GRAPH_NAME, v.String(), attrs)
+		_ = g.AddNode(GRAPH_NAME, q.(utils.State).String(), attrs)
 	}
 
+	// Make edges from transition rules.
+	rules := d.Rules
 	for arg, dst := range rules {
 		attrs := NewCommonEdgeAttrs()
 		attrs["label"] = fmt.Sprintf("\"'%c'\"", arg.C)
