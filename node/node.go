@@ -195,7 +195,7 @@ The fragment assembled from a Star node is like below:
 		\														 /
 		 `-------------------------['ε']------------------------´
 
-	+ frg1(fragment assembled with Concat.Ope1): I1 -- [???] --> F1
+	+ frg1(fragment assembled with Ope): I1 -- [???] --> F1
 
 Note: Accept states of new fragment is "(new state1)", "(new state2)" and "I1".
 */
