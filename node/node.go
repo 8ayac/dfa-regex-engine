@@ -209,7 +209,7 @@ func (s *Star) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
 	newFrg.F.Add(orgFrg.I)
 	newFrg.F.Add(newState2)
 
-	newFrg.AddRule(newFrg.I, 'ε', newState2)
+	newFrg.AddRule(newState1, 'ε', newState2)
 	newFrg.AddRule(newState1, 'ε', orgFrg.I)
 	for q := range orgFrg.F.Iter() {
 		newFrg.AddRule(q.(utils.State), 'ε', newState2)
