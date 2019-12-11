@@ -6,7 +6,6 @@ import (
 
 	"github.com/8ayac/dfa-regex-engine/nfa/nfabuilder"
 	"github.com/8ayac/dfa-regex-engine/utils"
-	mapset "github.com/8ayac/golang-set"
 )
 
 // String to identify the type of Node.
@@ -63,7 +62,7 @@ func (c *Character) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
 
 	// Set initial state and accept states
 	newFrg.I = q1
-	newFrg.F = newFrg.F.Union(mapset.NewSet(q2))
+	newFrg.F.Add(q2)
 
 	return newFrg
 }
