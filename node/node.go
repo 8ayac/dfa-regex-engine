@@ -51,12 +51,17 @@ The fragment assembled from a Character node is like below:
 	q1(Initial State) -- [Character.V] --> q2(Accept state)
 */
 func (c *Character) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
+	// Prepare a fragment
 	newFrg := nfabuilder.NewFragment()
 
+	// Prepare states
 	q1 := utils.NewState(ctx.Increment())
 	q2 := utils.NewState(ctx.Increment())
+
+	// Set rules
 	newFrg.AddRule(q1, c.V, q2)
 
+	// Set initial state and accept states
 	newFrg.I = q1
 	newFrg.F = newFrg.F.Union(mapset.NewSet(q2))
 
@@ -100,15 +105,23 @@ The fragment assembled from a Union node is like below:
 	+ frg2(fragment assembled with Union.Ope2): I2 -- [???] --> F2
 */
 func (u *Union) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
+	// Prepare fragments
+	newFrg := nfabuilder.NewFragment()
 	frg1 := u.Ope1.Assemble(ctx)
 	frg2 := u.Ope2.Assemble(ctx)
 
-	newFrg := frg1.MergeRule(frg2)
-	newFrg.I = utils.NewState(ctx.Increment())
+	// Prepare a new state
+	newState := utils.NewState(ctx.Increment())
+
+	// Set rules
+	newFrg = frg1.MergeRule(frg2)
+	newFrg.AddRule(newState, 'ε', frg1.I)
+	newFrg.AddRule(newState, 'ε', frg2.I)
+
+	// Set initial state and accept states
+	newFrg.I = newState
 	newFrg.F = newFrg.F.Union(frg1.F)
 	newFrg.F = newFrg.F.Union(frg2.F)
-	newFrg.AddRule(newFrg.I, 'ε', frg1.I)
-	newFrg.AddRule(newFrg.I, 'ε', frg2.I)
 
 	return newFrg
 }
@@ -149,15 +162,20 @@ The fragment assembled from a Concat node is like below:
 	+ frg2(fragment assembled with Concat.Ope2): I2 -- [???] --> F2
 */
 func (c *Concat) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
+	// Prepare fragments
+	newFrg := nfabuilder.NewFragment()
 	frg1 := c.Ope1.Assemble(ctx)
 	frg2 := c.Ope2.Assemble(ctx)
 
-	newFrg := frg1.MergeRule(frg2)
-	newFrg.I = frg1.I
-	newFrg.F = newFrg.F.Union(frg2.F)
+	// Set rules
+	newFrg = frg1.MergeRule(frg2)
 	for q := range frg1.F.Iter() {
 		newFrg.AddRule(q.(utils.State), 'ε', frg2.I)
 	}
+
+	// Set initial state and accept states
+	newFrg.I = frg1.I
+	newFrg.F = newFrg.F.Union(frg2.F)
 
 	return newFrg
 }
@@ -200,21 +218,26 @@ The fragment assembled from a Star node is like below:
 Note: Accept states of new fragment is "(new state1)", "(new state2)" and "I1".
 */
 func (s *Star) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
+	// Prepare fragments
 	orgFrg := s.Ope.Assemble(ctx)
 	newFrg := orgFrg.CreateSkeleton()
+
+	// Prepare states
 	newState1 := utils.NewState(ctx.Increment())
 	newState2 := utils.NewState(ctx.Increment())
 
-	newFrg.I = newState1
-	newFrg.F.Add(orgFrg.I)
-	newFrg.F.Add(newState2)
-
+	// Set Rules
 	newFrg.AddRule(newState1, 'ε', newState2)
 	newFrg.AddRule(newState1, 'ε', orgFrg.I)
 	for q := range orgFrg.F.Iter() {
 		newFrg.AddRule(q.(utils.State), 'ε', newState2)
 		newFrg.AddRule(q.(utils.State), 'ε', orgFrg.I)
 	}
+
+	// Set initial state and accepts states
+	newFrg.I = newState1
+	newFrg.F.Add(orgFrg.I)
+	newFrg.F.Add(newState2)
 
 	return newFrg
 }
