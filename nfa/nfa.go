@@ -126,55 +126,62 @@ func (nfa *NFA) epsilonClosure(state utils.State) (reachable mapset.Set) {
 	return
 }
 
-// DFAStatesMap associates subsets of the NFA state set with the states of the DFA.
-type DFAStatesMap map[mapset.Set]utils.State
-
 // subsetConstruction implements Subset Construction.
 // Returns the data for constructing the equivalent DFA from the NFA given in the argument.
 // For details: https://en.wikipedia.org/wiki/Powerset_construction
-func (nfa *NFA) SubsetConstruction() (dInit utils.State, dAccepts mapset.Set, dRules dfarule.RuleMap) {
-	dInit = utils.NewState(0)
-	dAccepts = mapset.NewSet()
+func (nfa *NFA) SubsetConstruction() (dI utils.State, dF mapset.Set, dRules dfarule.RuleMap) {
+	I := nfa.Init
+	F := nfa.Accepts
+	Rules := nfa.Rules
+
+	dI = utils.NewState(0)
+	dF = mapset.NewSet()
 	dRules = dfarule.RuleMap{}
 
-	Sigma := nfa.AllSymbol()
 	dStates := DFAStatesMap{}
-	dStates[mapset.NewSet(nfa.Init)] = utils.NewState(0)
+	dStates[mapset.NewSet(I)] = utils.NewState(0)
 
-	queue := mapset.NewSet(mapset.NewSet(nfa.Init))
+	queue := mapset.NewSet(mapset.NewSet(I))
 	for queue.N() != 0 {
-		nDst := queue.Pop().(mapset.Set) // the state set which can be reached from a NFA state.
+		dstate := queue.Pop().(mapset.Set) // the state set which can be reached from a NFA state.
 
-		if nfa.Accepts.Intersect(nDst).N() > 0 {
-			dAccepts.Add(dStates.getState(nDst))
+		if F.Intersect(dstate).N() > 0 {
+			dF.Add(dStates.getState(dstate))
 		}
 
+		Sigma := nfa.AllSymbol()
 		for c := range Sigma.Iter() {
-			dDst := mapset.NewSet()
-			for q := range nDst.Iter() {
-				d, ok := nfa.CalcDst(q.(utils.State), c.(rune))
+			dnext := mapset.NewSet()
+			for q := range dstate.Iter() {
+				d, ok := Rules[nfarule.NewRuleArgs(q.(utils.State), c.(rune))]
 				if ok {
-					dDst = dDst.Union(d)
+					dnext = dnext.Union(d)
 				}
 			}
 
-			if dDst.N() == 0 {
+			if dnext.N() == 0 {
 				continue
 			}
 
-			if !dStates.haveKey(dDst) {
-				queue.Add(dDst)
-				dStates[dDst] = utils.NewState(len(dStates))
+			if !dStates.haveKey(dnext) {
+				queue.Add(dnext)
+				dStates[dnext] = utils.NewState(len(dStates))
 			}
 
-			dNext := dStates.getState(dDst)
-			dFrom := dStates.getState(nDst)
-			dRules[dfarule.NewRuleArgs(dFrom, c.(rune))] = dNext
+			for k := range dStates {
+				if k.Equal(dnext) {
+					dnext = k // Swap to avoid problems with pointers
+				}
+			}
+			dRules[dfarule.NewRuleArgs(dStates[dstate], c.(rune))] = dStates[dnext]
 		}
 	}
 
 	return
 }
+
+// DFAStatesMap associates subsets of the NFA state set with the states of the DFA.
+type DFAStatesMap map[mapset.Set]utils.State
 
 // getState returns the state associated with key.
 // If there is no corresponding state, it returns empty state struct.
