@@ -214,7 +214,7 @@ The fragment assembled from a Star node is like below:
 
 	+ frg1(fragment assembled with Ope): I1 -- [???] --> F1
 
-Note: Accept states of new fragment is "(new state1)", "(new state2)" and "I1".
+Note: Accept states of new fragment is "(new state2)" and "I1".
 */
 func (s *Star) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
 	// Prepare fragments
