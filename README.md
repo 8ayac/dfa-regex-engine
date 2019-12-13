@@ -13,6 +13,7 @@ The engine supports the following metacharacters.
 |Metacharacter|Desciption|Examples|
 |---|---|---|
 |*|Matches 0 or more repetitions of a pattern.|a* = a, aaa...|
+|+|Matches 1 or more repetitions of a pattern.|(abc)+ = abc, abcabc, abcabcabc...|
 |&#x7C;|Match any of the left and right patterns.(like the Boolean OR)|a&#x7c;b&#x7c;c = a, b, c|
 
 ## Usage

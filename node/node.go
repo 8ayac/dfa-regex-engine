@@ -14,6 +14,7 @@ const (
 	TypeUnion     = "Union"
 	TypeConcat    = "Concat"
 	TypeStar      = "Star"
+	TypePlus      = "Plus"
 )
 
 // Node is the interface Node implements.
@@ -245,4 +246,64 @@ func (s *Star) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
 // a subtree with the Star node at the top.
 func (s *Star) SubtreeString() string {
 	return fmt.Sprintf("\x1b[33m%s(%s\x1b[33m)\x1b[0m", s.Ty, s.Ope.SubtreeString())
+}
+
+// Plus represents the Star node.
+type Plus struct {
+	Ty  string
+	Ope Node
+}
+
+func (p *Plus) String() string {
+	return p.SubtreeString()
+}
+
+// NewPlus returns a new Star node.
+func NewPlus(ope Node) *Plus {
+	return &Plus{
+		Ty:  TypePlus,
+		Ope: ope,
+	}
+}
+
+/*
+Assemble returns a NFA fragment assembled with Plus node.
+*/
+func (p *Plus) Assemble(ctx *utils.Context) *nfabuilder.Fragment {
+	// Prepare fragments
+	newFrg := nfabuilder.NewFragment()
+	frg1 := p.Ope.Assemble(ctx)
+	org := p.Ope.Assemble(ctx)
+	frg2 := org.CreateSkeleton()
+
+	// Prepare states
+	newState1 := utils.NewState(ctx.Increment())
+	newState2 := utils.NewState(ctx.Increment())
+
+	// Set Rules
+	frg2.AddRule(newState1, 'ε', newState2)
+	frg2.AddRule(newState1, 'ε', org.I)
+	for q := range org.F.Iter() {
+		frg2.AddRule(q.(utils.State), 'ε', newState2)
+		frg2.AddRule(q.(utils.State), 'ε', org.I)
+	}
+
+	newFrg = frg1.MergeRule(frg2)
+	for q := range frg1.F.Iter() {
+		newFrg.AddRule(q.(utils.State), 'ε', frg2.I)
+	}
+
+	// Set initial state and accepts states
+	newFrg.I = frg1.I
+	newFrg.F = newFrg.F.Union(frg1.F)
+	newFrg.F.Add(org.I)
+	newFrg.F.Add(newState2)
+
+	return newFrg
+}
+
+// SubtreeString returns a string to which converts
+// a subtree with the Plus node at the top.
+func (p *Plus) SubtreeString() string {
+	return fmt.Sprintf("\x1b[33m%s(%s\x1b[33m)\x1b[0m", p.Ty, p.Ope.SubtreeString())
 }

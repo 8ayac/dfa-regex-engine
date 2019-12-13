@@ -34,6 +34,8 @@ func (l *Lexer) Scan() (tokenList []*token.Token) {
 			tokenList = append(tokenList, token.NewToken(l.s[i], token.RPAREN))
 		case '*':
 			tokenList = append(tokenList, token.NewToken(l.s[i], token.STAR))
+		case '+':
+			tokenList = append(tokenList, token.NewToken(l.s[i], token.PLUS))
 		case '\\':
 			tokenList = append(tokenList, token.NewToken(l.s[i+1], token.CHARACTER))
 			i++

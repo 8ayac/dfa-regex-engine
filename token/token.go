@@ -11,6 +11,7 @@ const (
 	CHARACTER Type = iota
 	UNION
 	STAR
+	PLUS
 	LPAREN
 	RPAREN
 	EOF
@@ -24,6 +25,8 @@ func (k Type) String() string {
 		return "UNION"
 	case STAR:
 		return "STAR"
+	case PLUS:
+		return "PLUS"
 	case LPAREN:
 		return "LPAREN"
 	case RPAREN:
