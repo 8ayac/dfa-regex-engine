@@ -10,17 +10,17 @@ import (
 
 // NFA represents a Non-Deterministic Finite Automaton.
 type NFA struct {
-	Init    utils.State     // initial state
-	Accepts mapset.Set      // accept states
-	Rules   nfarule.RuleMap // transition function
+	I     utils.State     // initial state
+	F     mapset.Set      // accept states
+	Rules nfarule.RuleMap // transition function
 }
 
 // NewNFA returns a new NFA.
 func NewNFA(init utils.State, accepts mapset.Set, rules nfarule.RuleMap) *NFA {
 	return &NFA{
-		Init:    init,
-		Accepts: accepts,
-		Rules:   rules,
+		I:     init,
+		F:     accepts,
+		Rules: rules,
 	}
 }
 
@@ -54,8 +54,8 @@ func (nfa *NFA) CalcDst(q utils.State, c rune) (mapset.Set, bool) {
 
 // ToWithoutEpsilon update ε-NFA to NFA whose no epsilon transitions.
 func (nfa *NFA) ToWithoutEpsilon() {
-	if nfa.Accepts.IsSubset(nfa.epsilonClosure(nfa.Init)) {
-		nfa.Accepts.Add(nfa.Init)
+	if nfa.F.IsSubset(nfa.epsilonClosure(nfa.I)) {
+		nfa.F.Add(nfa.I)
 	}
 	nfa.Rules = nfa.removeEpsilonRule()
 }
@@ -130,8 +130,8 @@ func (nfa *NFA) epsilonClosure(state utils.State) (reachable mapset.Set) {
 // Returns the data for constructing the equivalent DFA from the NFA given in the argument.
 // For details: https://en.wikipedia.org/wiki/Powerset_construction
 func (nfa *NFA) SubsetConstruction() (dI utils.State, dF mapset.Set, dRules dfarule.RuleMap) {
-	I := nfa.Init
-	F := nfa.Accepts
+	I := nfa.I
+	F := nfa.F
 	Rules := nfa.Rules
 
 	dI = utils.NewState(0)
