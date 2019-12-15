@@ -9,23 +9,23 @@ import (
 
 // DFA represents a Deterministic Finite Automaton.
 type DFA struct {
-	Init    utils.State     // initial state
-	Accepts mapset.Set      // accepts states
-	Rules   dfarule.RuleMap // transition function
+	I     utils.State     // initial state
+	F     mapset.Set      // accepts states
+	Rules dfarule.RuleMap // transition function
 }
 
 // NewDFA returns a new dfa.
 func NewDFA(init utils.State, accepts mapset.Set, rules dfarule.RuleMap) *DFA {
 	return &DFA{
-		Init:    init,
-		Accepts: accepts,
-		Rules:   rules,
+		I:     init,
+		F:     accepts,
+		Rules: rules,
 	}
 }
 
 // Minimize minimizes the DFA.
 func (dfa *DFA) Minimize() {
-	states := mapset.NewSet(dfa.Init)
+	states := mapset.NewSet(dfa.I)
 	for _, v := range dfa.Rules {
 		states.Add(v)
 	}
@@ -81,8 +81,8 @@ func (dfa *DFA) mergeState(to, from utils.State) {
 }
 
 func (dfa *DFA) isEquivalent(q1, q2 utils.State) bool {
-	if !((dfa.Accepts.Contains(q1) && dfa.Accepts.Contains(q2)) ||
-		(!dfa.Accepts.Contains(q1) && !dfa.Accepts.Contains(q2))) {
+	if !((dfa.F.Contains(q1) && dfa.F.Contains(q2)) ||
+		(!dfa.F.Contains(q1) && !dfa.F.Contains(q2))) {
 		return false
 	}
 
@@ -115,7 +115,7 @@ func NewRuntime(d *DFA) (r *Runtime) {
 	r = &Runtime{
 		d: d,
 	}
-	r.cur = d.Init
+	r.cur = d.I
 	return
 }
 
@@ -133,7 +133,7 @@ func (r *Runtime) transit(c rune) bool {
 
 // isAccept returns whether current status is in accept states.
 func (r *Runtime) isAccept() bool {
-	accepts := r.d.Accepts
+	accepts := r.d.F
 	if accepts.Contains(r.cur) {
 		return true
 	}

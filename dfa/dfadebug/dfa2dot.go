@@ -44,20 +44,20 @@ func DFA2dot(d dfa.DFA, name string) {
 	dummyAttrs := NewCommonNodeAttrs()
 	dummyAttrs["shape"] = "point"
 	_ = g.AddNode(GRAPH_NAME, "\"\"", dummyAttrs)
-	_ = g.AddNode(GRAPH_NAME, d.Init.String(), NewCommonNodeAttrs())
+	_ = g.AddNode(GRAPH_NAME, d.I.String(), NewCommonNodeAttrs())
 
 	initEdgeAttrs := NewCommonEdgeAttrs()
 	initEdgeAttrs["len"] = "2"
-	_ = g.AddEdge("\"\"", d.Init.String(), true, initEdgeAttrs)
+	_ = g.AddEdge("\"\"", d.I.String(), true, initEdgeAttrs)
 
 	// Make state nodes.
-	states := mapset.NewSet(d.Init)
+	states := mapset.NewSet(d.I)
 	for _, v := range d.Rules {
 		states.Add(v)
 	}
 	for q := range states.Iter() {
 		attrs := NewCommonNodeAttrs()
-		if d.Accepts.Contains(q.(utils.State)) {
+		if d.F.Contains(q.(utils.State)) {
 			attrs["shape"] = "doublecircle"
 		}
 		_ = g.AddNode(GRAPH_NAME, q.(utils.State).String(), attrs)
