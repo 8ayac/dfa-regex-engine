@@ -12,8 +12,8 @@ import (
 
 // Parser has a slice of tokens to parse, and now looking token.
 type Parser struct {
-	tokens []*token.Token
-	look   *token.Token
+	tokens []token.Token
+	look   token.Token
 }
 
 // NewParser returns a new Parser with the tokens to

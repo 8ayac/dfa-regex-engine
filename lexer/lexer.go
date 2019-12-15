@@ -21,7 +21,7 @@ func NewLexer(s string) *Lexer {
 
 // Scan returns the token list to which converted from
 // the symbol slice held in Lexer struct.
-func (l *Lexer) Scan() (tokenList []*token.Token) {
+func (l *Lexer) Scan() (tokenList []token.Token) {
 	for i := 0; i < len(l.s); i++ {
 		switch l.s[i] {
 		case '\x00':

@@ -44,13 +44,13 @@ type Token struct {
 	Ty Type // token type
 }
 
-func (t *Token) String() string {
+func (t Token) String() string {
 	return fmt.Sprintf("V -> \x1b[32m%v\x1b[0m\tKind -> \x1b[32m%v\x1b[0m", string(t.V), t.Ty)
 }
 
 // NewToken returns a new Token.
-func NewToken(value rune, k Type) *Token {
-	return &Token{
+func NewToken(value rune, k Type) Token {
+	return Token{
 		V:  value,
 		Ty: k,
 	}
