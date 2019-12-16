@@ -42,6 +42,7 @@ func (dfa *DFA) Minimize() {
 			if _, ok := eqMap[q2]; ok {
 				continue
 			}
+			eqMap[q2] = q1
 			dfa.mergeState(q1, q2)
 		}
 	}
