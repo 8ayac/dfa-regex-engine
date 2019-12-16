@@ -143,6 +143,7 @@ func (r *Runtime) isAccept() bool {
 // Matching returns whether the string given is accepted (or not) by
 // simulating the all transitions.
 func (r *Runtime) Matching(str string) bool {
+	r.cur = r.d.I
 	for _, c := range []rune(str) {
 		if !r.transit(c) {
 			return false // if the transition failed, the input "str" is rejected.
