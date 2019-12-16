@@ -39,21 +39,11 @@ func (dfa *DFA) Minimize() {
 			if !dfa.isEquivalent(q1, q2) {
 				continue
 			}
-			if _, ok := eqMap[q2]; !ok {
-				eqMap[q2] = q1
+			if _, ok := eqMap[q2]; ok {
+				continue
 			}
-			dfa.mergeState(getProperEq(q2, eqMap), q2)
+			dfa.mergeState(q1, q2)
 		}
-	}
-}
-
-func getProperEq(q utils.State, eqMap map[utils.State]utils.State) utils.State {
-	for {
-		eq, ok := eqMap[q]
-		if !ok {
-			return q
-		}
-		q = eq
 	}
 }
 
