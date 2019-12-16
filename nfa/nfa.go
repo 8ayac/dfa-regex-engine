@@ -92,18 +92,22 @@ func (nfa *NFA) removeEpsilonRule() (newRule nfarule.RuleMap) {
 }
 
 // epsilonExpand returns the state set, which is a result of simulating the transitions like 'ε*->symbol->ε*'.
-func (nfa *NFA) epsilonExpand(state utils.State, symbol rune) (dst mapset.Set) {
-	dst = mapset.NewSet()
+func (nfa *NFA) epsilonExpand(state utils.State, symbol rune) (final mapset.Set) {
+	first := nfa.epsilonClosure(state)
 
-	orgDst, ok := nfa.CalcDst(state, symbol)
-	if !ok {
-		return
+	second := mapset.NewSet()
+	for q := range first.Iter() {
+		if dst, ok := nfa.CalcDst(q.(utils.State), symbol); ok {
+			second = second.Union(dst)
+		}
 	}
 
-	for q := range orgDst.Iter() {
-		e := nfa.epsilonClosure(q.(utils.State))
-		dst = dst.Union(e)
+	final = mapset.NewSet()
+	for q := range second.Iter() {
+		dst := nfa.epsilonClosure(q.(utils.State))
+		final = final.Union(dst)
 	}
+
 	return
 }
 
