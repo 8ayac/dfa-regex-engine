@@ -57,10 +57,10 @@ func getProperEq(q utils.State, eqMap map[utils.State]utils.State) utils.State {
 	}
 }
 
-func (dfa *DFA) copyRule(to, from utils.State) {
+func (dfa *DFA) replaceState(to, from utils.State) {
 	rules := dfa.Rules
 	for arg, dst := range rules {
-		if arg.From == to && dst == from {
+		if dst == from {
 			rules[arg] = to
 		}
 	}
@@ -76,7 +76,7 @@ func (dfa *DFA) deleteState(q utils.State) {
 }
 
 func (dfa *DFA) mergeState(to, from utils.State) {
-	dfa.copyRule(to, from)
+	dfa.replaceState(to, from)
 	dfa.deleteState(from)
 }
 
